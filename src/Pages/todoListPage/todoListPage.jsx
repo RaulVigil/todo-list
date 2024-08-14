@@ -1,16 +1,19 @@
+// src/Pages/todo/todoListPage.jsx
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { addTask, markTaskDone } from "../../redux/actions";
 import Card from "../../Components/Card/Card";
 import Input from "../../Components/Input/Input";
 import Button from "../../Components/Button/Button";
 
 const TodoListPage = () => {
-  const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
+  const tasks = useSelector((state) => state.tasks);
+  const dispatch = useDispatch();
 
-  const addTask = () => {
+  const handleAddTask = () => {
     if (newTask.trim()) {
-      const newTasks = [...tasks, { text: newTask, status: "In Progress" }];
-      setTasks(newTasks);
+      dispatch(addTask(newTask));
       setNewTask("");
     } else {
       console.log("No se agregó la tarea");
@@ -18,12 +21,7 @@ const TodoListPage = () => {
   };
 
   const handleMarkAsDone = (index) => {
-    console.log("Marking task as done at index:", index);
-    const updatedTasks = tasks.map((task, i) =>
-      i === index ? { ...task, status: "Done" } : task
-    );
-    setTasks(updatedTasks);
-    console.log("Tasks after marking as done:", updatedTasks);
+    dispatch(markTaskDone(index));
   };
 
   return (
@@ -40,7 +38,7 @@ const TodoListPage = () => {
               />
             </div>
             <div className="w-[30%]">
-              <Button onClick={addTask}>Add Task</Button>
+              <Button onClick={handleAddTask}>Agregar Tarea</Button>
             </div>
           </div>
         </div>
@@ -56,7 +54,7 @@ const TodoListPage = () => {
                 onClick={() => handleMarkAsDone(index)}
                 disabled={task.status === "Done"}
               >
-                {task.status === "Done" ? "Done" : "Mark Done"}
+                {task.status === "Done" ? "Completada" : "Marcar como Completada"}
               </button>
             </Card>
           ))}
